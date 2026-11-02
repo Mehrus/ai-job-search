@@ -1,0 +1,3 @@
+date,company,sector,role,role_type,channel,status,contact_person,fit_rating,notes,cv_file,cover_letter_file,source,deadline
+2026-11-02,Northwind Bank,fintech,Senior Angular Developer,frontend,portal,applied,,78,2026-11-02 applied via justjoin,cv/main_northwind_angular.tex,cover_letters/cover_northwind_angular.tex,https://example.com/jobs/northwind-senior-angular,2027-01-07
+2026-09-01,Old Corp,software,Angular Developer,frontend,referral,no response,,55,"quoted, hand-edited note",,,,
