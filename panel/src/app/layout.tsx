@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+
+import { IntervioStatus } from "@/components/intervio-status";
 
 import "./globals.css";
 
@@ -28,6 +31,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 Statystyki
               </Link>
             </nav>
+            <Suspense fallback={null}>
+              <IntervioStatus />
+            </Suspense>
           </div>
         </header>
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
