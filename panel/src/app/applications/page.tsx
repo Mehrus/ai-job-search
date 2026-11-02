@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 
 import { KanbanBoard } from "@/components/applications/kanban-board";
+import { UpcomingStages } from "@/components/applications/upcoming-stages";
 import { WorkspaceWarnings } from "@/components/workspace-warnings";
 import { localToday } from "@/lib/data/deadline";
 import { loadWorkspace } from "@/lib/data/load";
@@ -28,7 +29,10 @@ export default async function ApplicationsPage() {
           Brak aplikacji w trackerze. Pojawią się po <code>/apply</code> albo <code>/outcome</code>.
         </p>
       ) : (
-        <KanbanBoard applications={sorted} today={today} />
+        <>
+          <UpcomingStages applications={applications} today={today} />
+          <KanbanBoard applications={sorted} today={today} />
+        </>
       )}
     </>
   );

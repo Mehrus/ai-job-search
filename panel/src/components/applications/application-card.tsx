@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DeadlineLabel, TrackerBadge } from "@/components/offers/badges";
 import { daysUntil } from "@/lib/data/deadline";
 import type { Application } from "@/lib/data/load";
+import { formatWhen, stageLabel } from "@/lib/stages";
 import { cn } from "@/lib/utils";
 
 /** /outcome flags 10+ quiet days for a follow-up and 60+ for the stale sweep. */
@@ -43,6 +44,11 @@ export function ApplicationCard({ app, today }: { app: Application; today: strin
         {app.column === "drafted" && app.deadline && <DeadlineLabel deadline={app.deadline} today={today} />}
         <QuietLabel app={app} today={today} />
       </div>
+      {app.nextStage?.scheduled && app.column !== "closed" && (
+        <div className="text-xs text-sky-700 dark:text-sky-300">
+          {stageLabel(app.nextStage.label)}: {formatWhen(app.nextStage.scheduled)}
+        </div>
+      )}
     </div>
   );
 

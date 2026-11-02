@@ -46,10 +46,28 @@ export function followUpsSent(row: TrackerRow): number {
   return [...(row.notes ?? "").matchAll(/followed up \d{4}-\d{2}-\d{2}/gi)].length;
 }
 
+export interface OutcomeStage {
+  /** Stage name without the trailing "(date)" / "(scheduled ...)". */
+  label: string;
+  done: boolean;
+  /** Date the stage happened, from "- [x] Label (YYYY-MM-DD)". */
+  date: string | null;
+  /** "YYYY-MM-DD" or "YYYY-MM-DD HH:MM" from "- [ ] Label (scheduled ...)". */
+  scheduled: string | null;
+}
+
+/** Splits "Technical interview (scheduled 2026-11-10 14:00)" into its parts. */
+export function parseStageText(text: string): Omit<OutcomeStage, "done"> {
+  const m = text.match(/^(.*?)\s*\((scheduled\s+)?(\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2})?)\)\s*$/i);
+  if (!m) return { label: text.trim(), date: null, scheduled: null };
+  const when = m[3].replace("T", " ");
+  return m[2] ? { label: m[1], date: null, scheduled: when } : { label: m[1], date: when.slice(0, 10), scheduled: null };
+}
+
 export interface OutcomeFile {
   status: string | null;
   dateResolved: string | null;
-  stages: { label: string; done: boolean }[];
+  stages: OutcomeStage[];
   /** Everything after "## Notes", as markdown. */
   notes: string | null;
 }
@@ -65,7 +83,10 @@ export function parseOutcome(text: string): OutcomeFile {
   const stages: OutcomeFile["stages"] = [];
   const stagesSection = text.match(/##\s*Interview stages reached\s*\n([\s\S]*?)(?=\n##\s|$)/i)?.[1] ?? "";
   for (const m of stagesSection.matchAll(/^\s*[-*]\s*\[([ xX])\]\s*(.+)$/gm)) {
-    stages.push({ label: m[2].trim(), done: m[1].toLowerCase() === "x" });
+    const done = m[1].toLowerCase() === "x";
+    const parsed = parseStageText(m[2].trim());
+    // A ticked stage is no longer "scheduled", whatever the line still says.
+    stages.push({ ...parsed, done, scheduled: done ? null : parsed.scheduled });
   }
 
   const notes = text.match(/##\s*Notes\s*\n([\s\S]*)$/i)?.[1].trim() || null;

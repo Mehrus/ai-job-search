@@ -1,10 +1,11 @@
-import { ArrowLeft, CheckSquare, ExternalLink, Square } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { IntervioCard } from "@/components/intervio-card";
 import { ApplicationActions } from "@/components/applications/application-actions";
+import { StageManager } from "@/components/applications/stage-manager";
 import { DeadlineLabel, TrackerBadge } from "@/components/offers/badges";
 import { Markdown } from "@/components/markdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,35 +108,27 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Etapy rozmów</CardTitle>
             <CardDescription>
-              {outcome ? `z outcome.md${outcome.dateResolved ? `, zamknięte ${outcome.dateResolved}` : ""}` : "brak outcome.md"}
+              {outcome
+                ? `z outcome.md${outcome.dateResolved ? `, zamknięte ${outcome.dateResolved}` : ""}`
+                : "outcome.md powstanie przy pierwszym zapisie"}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {outcome && outcome.stages.length > 0 ? (
-              <ul className="space-y-1.5 text-sm">
-                {outcome.stages.map((s) => (
-                  <li key={s.label} className="flex items-center gap-2">
-                    {s.done ? (
-                      <CheckSquare className="size-4 text-emerald-600" />
-                    ) : (
-                      <Square className="text-muted-foreground size-4" />
-                    )}
-                    <span className={s.done ? "" : "text-muted-foreground"}>{s.label}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                Etapy pojawią się po <code>/outcome</code>.
-              </p>
-            )}
+            <StageManager
+              row={app.rowRef}
+              outcomeHash={app.outcomeHash}
+              stages={app.stages}
+              status={app.status}
+              today={today}
+            />
             {outcome?.notes && (
               <div className="mt-4 border-t pt-3">
+                <div className="text-muted-foreground mb-1 text-xs">Notatki z outcome.md</div>
                 <Markdown>{outcome.notes}</Markdown>
               </div>
             )}

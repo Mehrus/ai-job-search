@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -H 127.0.0.1",
     "dev:all": "node scripts/dev-all.mjs",
-    "dev:demo": "cp fixtures/demo-tracker.csv .demo-tracker.csv && JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=.demo-tracker.csv JOB_SEARCH_APPLICATIONS=fixtures/demo-applications next dev -H 127.0.0.1",
+    "dev:demo": "cp fixtures/demo-tracker.csv .demo-tracker.csv && rm -rf .demo-applications && cp -R fixtures/demo-applications .demo-applications && JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=.demo-tracker.csv JOB_SEARCH_APPLICATIONS=.demo-applications next dev -H 127.0.0.1",
     "build": "next build",
     "start": "next start -H 127.0.0.1",
     "lint": "eslint",

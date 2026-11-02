@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { parseTracker } from "./tracker";
-import { applyRowEdit, rowRefs, sanitizeNote, TrackerConflictError } from "./tracker-write";
+import { appendTrackerRow, applyRowEdit, rowRefs, sanitizeNote, TRACKER_HEADER, TrackerConflictError } from "./tracker-write";
 
 const HEADER =
   "date,company,sector,role,role_type,channel,status,contact_person,fit_rating,notes,cv_file,cover_letter_file,source,deadline";
@@ -57,5 +57,19 @@ describe("applyRowEdit", () => {
 describe("sanitizeNote", () => {
   it("removes commas, quotes and line breaks", () => {
     expect(sanitizeNote('rejected, no "feedback"\ngiven')).toBe("rejected - no feedback given");
+  });
+});
+
+describe("appendTrackerRow", () => {
+  it("creates the file with the standard header", () => {
+    const text = appendTrackerRow(null, { date: "2026-11-02", company: "Acme, Inc", role: 'Dev "A"', status: "applied" });
+    expect(text).toBe(`${TRACKER_HEADER}\n2026-11-02,"Acme, Inc",,"Dev ""A""",,,applied,,,,,,,\n`);
+    expect(parseTracker(text)[0]).toMatchObject({ company: "Acme, Inc", role: 'Dev "A"', status: "applied" });
+  });
+
+  it("follows the file's own header and leaves existing rows alone", () => {
+    const old = "date,company,role,status\r\n2026-01-01,X,Y,applied";
+    const text = appendTrackerRow(old, { date: "2026-11-02", company: "Z", role: "W", status: "applied", deadline: "2026-12-01" });
+    expect(text).toBe("date,company,role,status\r\n2026-01-01,X,Y,applied\r\n2026-11-02,Z,W,applied\r\n");
   });
 });

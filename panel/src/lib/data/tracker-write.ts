@@ -99,3 +99,31 @@ export function applyRowEdit(text: string, edit: RowEdit): string {
 
   return text.slice(0, record.start) + fields.join(",") + text.slice(record.end);
 }
+
+/** /apply Step 7.1 and /outcome Step 1.1 create the tracker with exactly this header. */
+export const TRACKER_HEADER =
+  "date,company,sector,role,role_type,channel,status,contact_person,fit_rating,notes,cv_file,cover_letter_file,source,deadline";
+
+function csvValue(value: string): string {
+  const clean = value.replace(/[\r\n]+/g, " ").trim();
+  return /[",]/.test(clean) ? `"${clean.replace(/"/g, '""')}"` : clean;
+}
+
+/**
+ * Appends one row, filling the columns the file's own header names (so a
+ * legacy header without `deadline` stays valid). Creates the file with the
+ * standard header when `text` is null. Never touches existing rows.
+ */
+export function appendTrackerRow(text: string | null, values: Record<string, string | number | null | undefined>): string {
+  const source = text && text.trim() !== "" ? text : `${TRACKER_HEADER}\n`;
+  const header = scanRecords(source)[0];
+  if (!header) throw new TrackerConflictError("Tracker nie ma nagłówka.");
+  const line = header.fields
+    .map((f) => {
+      const v = values[f.value.trim().toLowerCase()];
+      return v === null || v === undefined ? "" : csvValue(String(v));
+    })
+    .join(",");
+  const eol = source.includes("\r\n") ? "\r\n" : "\n";
+  return (source.endsWith("\n") ? source : source + eol) + line + eol;
+}

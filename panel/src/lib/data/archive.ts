@@ -33,6 +33,15 @@ async function readText(file: string): Promise<string | null> {
   }
 }
 
+export function outcomePath(root: string, folder: string): string {
+  return path.join(applicationsDir(root), folder, "outcome.md");
+}
+
+/** outcome.md text for one archive folder, or null when it does not exist yet. */
+export async function readOutcomeText(root: string, folder: string): Promise<string | null> {
+  return readText(outcomePath(root, folder));
+}
+
 export async function loadArchive(root: string, row: TrackerRow): Promise<Archive | null> {
   const name = archiveFolderName(row.company, row.role);
   if (!name) return null;
