@@ -36,9 +36,12 @@ Offer and application pages have a **Ćwicz w Intervio** card. It detects topics
 ```bash
 cd panel
 pnpm install
+pnpm dev:all      # panel on :3000 + Intervio on :3001 together (Ctrl+C stops both)
 pnpm dev          # http://localhost:3000, reads the repo root (..)
 pnpm dev:demo     # same UI on fictional data (edits go to a throwaway .demo-tracker.csv)
 ```
+
+`dev:all` expects Intervio next to this repo (`../intervio` from the repo root). Use `INTERVIO_DIR=/path/to/intervio pnpm dev:all` if it lives elsewhere, and `PANEL_PORT` / `INTERVIO_PORT` to change the ports. The header shows whether Intervio is running and links to it.
 
 To read another workspace, run `JOB_SEARCH_ROOT=/path/to/ai-job-search pnpm dev`. You can also point at individual files or the archive folder with `JOB_SEARCH_SEEN_JOBS`, `JOB_SEARCH_TRACKER` and `JOB_SEARCH_APPLICATIONS`.
 
