@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { intervioCatalogUrl, intervioTopics } from "./intervio";
 
 describe("intervioTopics", () => {
-  it("maps posting phrases to Intervio tags and flags uncovered stacks", () => {
+  it("maps posting phrases to Intervio tags", () => {
     const topics = intervioTopics([
       "Senior Angular Developer",
       "Standalone components, signals and signal forms",
@@ -11,7 +11,8 @@ describe("intervioTopics", () => {
       "Backend-heavy C# scope",
     ]);
     expect(topics.map((t) => t.label)).toEqual(["State management", "Signals", "Forms", ".NET / C#"]);
-    expect(topics.find((t) => t.label === ".NET / C#")?.tag).toBeNull();
+    expect(topics.find((t) => t.label === ".NET / C#")?.tag).toBe("tag-dotnet");
+    expect(intervioTopics(["Java Spring backend"])[0].tag).toBeNull();
     expect(topics.find((t) => t.label === "Signals")?.search).toBe("signal");
   });
 
@@ -28,6 +29,11 @@ describe("intervioCatalogUrl", () => {
     expect(url.pathname).toBe("/catalog/it/frontend/angular");
     expect(url.searchParams.get("tags")).toBe("tag-rxjs,tag-forms");
     expect(url.searchParams.get("difficulty")).toBe("mid,senior");
+  });
+
+  it("searches the whole IT catalog for fullstack roles", () => {
+    const url = new URL(intervioCatalogUrl("http://x", { title: "Fullstack .NET + Angular", tags: ["tag-dotnet"] }));
+    expect(url.pathname).toBe("/catalog/it");
   });
 
   it("falls back to the front-end catalog", () => {
