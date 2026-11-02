@@ -14,6 +14,12 @@ export function ApplicationActions({ row, status }: { row: RowRef; status: strin
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [nextStatus, setNextStatus] = useState(status);
+  // Follow the saved status after a refresh (a stage change can move it too).
+  const [shownStatus, setShownStatus] = useState(status);
+  if (shownStatus !== status) {
+    setShownStatus(status);
+    setNextStatus(status);
+  }
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 

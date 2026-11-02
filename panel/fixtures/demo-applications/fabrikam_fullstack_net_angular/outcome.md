@@ -5,8 +5,8 @@
 **Date resolved:** YYYY-MM-DD
 
 ## Interview stages reached
-- [x] Phone screen
-- [ ] Technical interview
+- [x] Phone screen (2026-10-24)
+- [ ] Technical interview (scheduled 2026-11-05 10:00)
 - [ ] Case interview
 - [ ] Final round
 - [ ] Offer received

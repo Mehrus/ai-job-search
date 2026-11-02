@@ -6,10 +6,12 @@ import { connection } from "next/server";
 import { IntervioCard } from "@/components/intervio-card";
 import { BandBadge, DeadlineLabel, GateBadge, ScoreBadge, TrackerBadge } from "@/components/offers/badges";
 import { CopyApplyButton } from "@/components/offers/copy-apply-button";
+import { MarkAppliedButton } from "@/components/offers/mark-applied-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { archiveFolderName } from "@/lib/data/applications";
 import { localToday } from "@/lib/data/deadline";
 import { loadWorkspace } from "@/lib/data/load";
+import { FINAL_STATUSES, type TrackerStatus } from "@/lib/data/tracker";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -40,6 +42,8 @@ export default async function OfferPage({ params }: PageProps<"/offers/[key]">) 
   if (!offer) notFound();
 
   const today = localToday();
+  const trackerStatus = offer.tracker?.status ?? null;
+  const canApply = !trackerStatus || trackerStatus === "drafted" || FINAL_STATUSES.has(trackerStatus as TrackerStatus);
 
   return (
     <div className="flex flex-col gap-4">
@@ -62,9 +66,10 @@ export default async function OfferPage({ params }: PageProps<"/offers/[key]">) 
             {offer.tracker && <TrackerBadge status={offer.tracker.status} />}
           </div>
         </div>
-        {offer.url && (
-          <div className="flex gap-2">
-            <CopyApplyButton url={offer.url} />
+        <div className="flex items-start gap-2">
+          {canApply && <MarkAppliedButton offerKey={offer.key} drafted={trackerStatus === "drafted"} />}
+          {offer.url && <CopyApplyButton url={offer.url} />}
+          {offer.url && (
             <a
               href={offer.url}
               target="_blank"
@@ -73,8 +78,8 @@ export default async function OfferPage({ params }: PageProps<"/offers/[key]">) 
             >
               <ExternalLink className="size-4" /> Ogłoszenie
             </a>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {offer.languageNote && (

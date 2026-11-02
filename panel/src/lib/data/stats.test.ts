@@ -21,7 +21,7 @@ const rows = parseTracker(
 describe("applicationStats", () => {
   const withOutcome = rows.map((r) =>
     r.company === "D"
-      ? { ...r, outcome: { status: "rejected", dateResolved: null, notes: null, stages: [{ label: "Phone screen", done: true }] } }
+      ? { ...r, outcome: { status: "rejected", dateResolved: null, notes: null, stages: [{ label: "Phone screen", done: true, date: null, scheduled: null }] } }
       : r,
   );
   const s = applicationStats(withOutcome);

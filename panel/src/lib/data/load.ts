@@ -1,8 +1,18 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { archiveFolderName, columnFor, followUpsSent, lastActivity, type Column } from "./applications";
+import {
+  archiveFolderName,
+  columnFor,
+  followUpsSent,
+  lastActivity,
+  parseOutcome,
+  type Column,
+  type OutcomeStage,
+} from "./applications";
+import { readOutcomeText } from "./archive";
 import { compareOffers, parseSeenJobs, type Offer } from "./offers";
+import { outcomeHash } from "./outcome-write";
 import { rowRefs, type RowRef } from "./tracker-write";
 import { indexTracker, parseTracker, trackerKey, type TrackerRow } from "./tracker";
 
@@ -37,6 +47,12 @@ export interface Application extends TrackerRow {
   offerKey: string | null;
   /** Row position + content hash, so an edit can detect a concurrent /outcome write. */
   rowRef: RowRef;
+  /** Stages from outcome.md (empty when there is none). */
+  stages: OutcomeStage[];
+  /** Earliest stage that is scheduled but not ticked yet. */
+  nextStage: OutcomeStage | null;
+  /** Hash of outcome.md as loaded ("" content when missing), for conflict checks. */
+  outcomeHash: string;
 }
 
 export interface Workspace {
@@ -90,15 +106,29 @@ export async function loadWorkspace(): Promise<Workspace> {
     .sort(compareOffers);
 
   const offerByPair = new Map(offers.map((o) => [trackerKey(o.company, o.title), o.key]));
-  const applications: Application[] = tracker.map((row, i) => ({
-    ...row,
-    slug: archiveFolderName(row.company, row.role),
-    column: columnFor(row.status),
-    lastActivity: lastActivity(row),
-    followUps: followUpsSent(row),
-    offerKey: offerByPair.get(trackerKey(row.company, row.role)) ?? null,
-    rowRef: refs[i],
-  }));
+  const applications: Application[] = await Promise.all(
+    tracker.map(async (row, i) => {
+      const slug = archiveFolderName(row.company, row.role);
+      const outcomeText = slug ? await readOutcomeText(root, slug) : null;
+      const stages = outcomeText ? parseOutcome(outcomeText).stages : [];
+      const nextStage =
+        stages
+          .filter((s) => !s.done && s.scheduled)
+          .sort((a, b) => a.scheduled!.localeCompare(b.scheduled!))[0] ?? null;
+      return {
+        ...row,
+        slug,
+        column: columnFor(row.status),
+        lastActivity: lastActivity(row),
+        followUps: followUpsSent(row),
+        offerKey: offerByPair.get(trackerKey(row.company, row.role)) ?? null,
+        rowRef: refs[i],
+        stages,
+        nextStage,
+        outcomeHash: outcomeHash(outcomeText),
+      };
+    }),
+  );
 
   return { root, offers: withTracker, tracker, applications, warnings };
 }
