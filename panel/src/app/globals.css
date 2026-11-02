@@ -83,3 +83,21 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+/* Minimal typography for rendered markdown (no @tailwindcss/typography dependency). */
+@layer components {
+  .prose-panel h1 { @apply mt-4 mb-2 text-xl font-semibold; }
+  .prose-panel h2 { @apply mt-4 mb-2 text-lg font-semibold; }
+  .prose-panel h3 { @apply mt-3 mb-1.5 font-semibold; }
+  .prose-panel p { @apply my-2; }
+  .prose-panel ul { @apply my-2 list-disc pl-5; }
+  .prose-panel ol { @apply my-2 list-decimal pl-5; }
+  .prose-panel li { @apply my-0.5; }
+  .prose-panel blockquote { @apply text-muted-foreground my-2 border-l-2 pl-3; }
+  .prose-panel code { @apply bg-muted rounded px-1 py-0.5 text-xs; }
+  .prose-panel pre { @apply bg-muted my-2 overflow-x-auto rounded p-3; }
+  .prose-panel table { @apply my-2 w-full text-left text-xs; }
+  .prose-panel th, .prose-panel td { @apply border px-2 py-1 align-top; }
+  .prose-panel hr { @apply my-4; }
+  .prose-panel > :first-child { @apply mt-0; }
+}

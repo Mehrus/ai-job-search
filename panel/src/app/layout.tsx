@@ -21,9 +21,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/" className="hover:underline">
                 Oferty
               </Link>
-              <span className="text-muted-foreground cursor-not-allowed" title="Etap 2">
-                Aplikacje (wkrótce)
-              </span>
+              <Link href="/applications" className="hover:underline">
+                Aplikacje
+              </Link>
             </nav>
           </div>
         </header>

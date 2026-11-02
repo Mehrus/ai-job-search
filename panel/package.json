@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:demo": "JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=fixtures/demo-tracker.csv next dev",
+    "dev:demo": "JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=fixtures/demo-tracker.csv JOB_SEARCH_APPLICATIONS=fixtures/demo-applications next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -18,6 +18,8 @@
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {

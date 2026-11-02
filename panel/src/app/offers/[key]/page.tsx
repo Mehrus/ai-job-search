@@ -6,6 +6,7 @@ import { connection } from "next/server";
 import { BandBadge, DeadlineLabel, GateBadge, ScoreBadge, TrackerBadge } from "@/components/offers/badges";
 import { CopyApplyButton } from "@/components/offers/copy-apply-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { archiveFolderName } from "@/lib/data/applications";
 import { localToday } from "@/lib/data/deadline";
 import { loadWorkspace } from "@/lib/data/load";
 
@@ -134,6 +135,14 @@ export default async function OfferPage({ params }: PageProps<"/offers/[key]">) 
               <Field label="Fit">{offer.tracker.fitRating}</Field>
             </dl>
             {offer.tracker.notes && <p className="mt-3 text-sm whitespace-pre-wrap">{offer.tracker.notes}</p>}
+            {archiveFolderName(offer.tracker.company, offer.tracker.role) && (
+              <Link
+                href={`/applications/${encodeURIComponent(archiveFolderName(offer.tracker.company, offer.tracker.role)!)}`}
+                className="mt-3 inline-block text-sm underline"
+              >
+                Karta aplikacji i przygotowanie do rozmów →
+              </Link>
+            )}
           </CardContent>
         </Card>
       )}

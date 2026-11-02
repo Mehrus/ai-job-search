@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { archiveFolderName, columnFor, followUpsSent, lastActivity, type Column } from "./applications";
 import { compareOffers, parseSeenJobs, type Offer } from "./offers";
 import { indexTracker, parseTracker, trackerKey, type TrackerRow } from "./tracker";
 
@@ -19,10 +20,21 @@ export interface OfferWithTracker extends Offer {
   tracker: TrackerRow | null;
 }
 
+export interface Application extends TrackerRow {
+  /** Archive folder name; also the URL slug. Null when company+role has no letters/digits. */
+  slug: string | null;
+  column: Column;
+  lastActivity: string | null;
+  followUps: number;
+  /** seen_jobs.json key of the matching offer, if /scrape saw it. */
+  offerKey: string | null;
+}
+
 export interface Workspace {
   root: string;
   offers: OfferWithTracker[];
   tracker: TrackerRow[];
+  applications: Application[];
   /** Problems worth showing in the UI instead of crashing the page. */
   warnings: string[];
 }
@@ -67,5 +79,15 @@ export async function loadWorkspace(): Promise<Workspace> {
     .map((offer) => ({ ...offer, tracker: byPair.get(trackerKey(offer.company, offer.title)) ?? null }))
     .sort(compareOffers);
 
-  return { root, offers: withTracker, tracker, warnings };
+  const offerByPair = new Map(offers.map((o) => [trackerKey(o.company, o.title), o.key]));
+  const applications: Application[] = tracker.map((row) => ({
+    ...row,
+    slug: archiveFolderName(row.company, row.role),
+    column: columnFor(row.status),
+    lastActivity: lastActivity(row),
+    followUps: followUpsSent(row),
+    offerKey: offerByPair.get(trackerKey(row.company, row.role)) ?? null,
+  }));
+
+  return { root, offers: withTracker, tracker, applications, warnings };
 }
