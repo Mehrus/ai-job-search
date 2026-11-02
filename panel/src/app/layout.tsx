@@ -24,6 +24,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/applications" className="hover:underline">
                 Aplikacje
               </Link>
+              <Link href="/stats" className="hover:underline">
+                Statystyki
+              </Link>
             </nav>
           </div>
         </header>
