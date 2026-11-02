@@ -1,13 +1,23 @@
 #!/usr/bin/env node
 // Starts the panel (port 3000) and Intervio (port 3001) together.
-// Usage: pnpm dev:all   (INTERVIO_DIR=/path/to/intervio to override the default ../../intervio)
+// Usage: pnpm dev:all   (INTERVIO_DIR=/path/to/intervio overrides the lookup below)
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const panelDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const intervioDir = path.resolve(process.env.INTERVIO_DIR ?? path.join(panelDir, "..", "..", "intervio"));
+// Without INTERVIO_DIR, use the first of these that holds a package.json.
+const intervioCandidates = [
+  path.join(panelDir, "..", "..", "intervio"),
+  path.join(os.homedir(), "web", "intervio"),
+];
+const intervioDir = path.resolve(
+  process.env.INTERVIO_DIR ??
+    intervioCandidates.find((dir) => existsSync(path.join(dir, "package.json"))) ??
+    intervioCandidates[0],
+);
 const panelPort = process.env.PANEL_PORT ?? "3000";
 const intervioPort = process.env.INTERVIO_PORT ?? "3001";
 
@@ -63,7 +73,7 @@ if (await alreadyRunning(intervioUrl)) {
   console.log(`[intervio] już działa na ${intervioUrl} - nie uruchamiam drugi raz.`);
 } else if (!existsSync(path.join(intervioDir, "package.json"))) {
   console.warn(
-    `Nie znalazłem Intervio w ${intervioDir}. Ustaw INTERVIO_DIR=/ścieżka/do/intervio. Startuję sam panel.`,
+    `Nie znalazłem Intervio (szukałem w ${process.env.INTERVIO_DIR ? intervioDir : intervioCandidates.join(", ")}). Ustaw INTERVIO_DIR=/ścieżka/do/intervio. Startuję sam panel.`,
   );
 } else {
   if (!existsSync(path.join(intervioDir, "node_modules"))) {
