@@ -1,0 +1,8 @@
+date,company,sector,role,role_type,channel,status,contact_person,fit_rating,notes,cv_file,cover_letter_file,source,deadline
+2026-11-02,Northwind Bank,fintech,Senior Angular Developer,frontend,portal,applied,,78,2026-11-02 applied via justjoin,cv/main_northwind_angular.tex,cover_letters/cover_northwind_angular.tex,https://example.com/jobs/northwind-senior-angular,2027-01-07
+2026-10-20,Fabrikam,software house,Fullstack .NET + Angular,fullstack,portal,interview,Anna Recruiter,56,2026-10-24 phone screen done; 2026-10-30 technical scheduled for 2026-11-05,cv/main_fabrikam_fullstack.tex,cover_letters/cover_fabrikam_fullstack.tex,https://example.com/jobs/fabrikam-fullstack,2026-11-17
+2026-11-01,Contoso,e-commerce,Front-end Developer (Angular),frontend,portal,drafted,,62,,cv/main_contoso_frontend.tex,cover_letters/cover_contoso_frontend.tex,https://example.com/jobs/contoso-frontend,2026-11-06
+2026-10-10,Blue Yonder Airlines,travel,Angular Developer,frontend,referral,applied,,60,2026-10-21 followed up 2026-10-21,,,,
+2026-09-01,Old Corp,software,Angular Developer,frontend,referral,no response,,55,"quoted, hand-edited note",,,,
+2026-08-15,Margie's Travel,travel,Senior Frontend Developer,frontend,portal,rejected,,70,2026-09-02 rejected after technical,,,,
+2026-10-05,Trey Research,consulting,Angular Tech Lead,frontend,linkedin,offer,,74,2026-10-28 offer received - decide by 2026-11-07,,,,

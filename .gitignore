@@ -120,3 +120,6 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# Temp file the panel writes before atomically renaming it over the tracker
+.job_search_tracker.*.tmp
