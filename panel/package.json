@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:demo": "JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=fixtures/demo-tracker.csv JOB_SEARCH_APPLICATIONS=fixtures/demo-applications next dev",
+    "dev": "next dev -H 127.0.0.1",
+    "dev:demo": "cp fixtures/demo-tracker.csv .demo-tracker.csv && JOB_SEARCH_SEEN_JOBS=fixtures/demo-seen_jobs.json JOB_SEARCH_TRACKER=.demo-tracker.csv JOB_SEARCH_APPLICATIONS=fixtures/demo-applications next dev -H 127.0.0.1",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 127.0.0.1",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run"

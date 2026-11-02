@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { ApplicationActions } from "@/components/applications/application-actions";
 import { DeadlineLabel, TrackerBadge } from "@/components/offers/badges";
 import { Markdown } from "@/components/markdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +70,15 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
           )}
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Aktualizuj</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ApplicationActions row={app.rowRef} status={app.status} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent>

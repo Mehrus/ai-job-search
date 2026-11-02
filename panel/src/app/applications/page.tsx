@@ -1,8 +1,7 @@
 import { connection } from "next/server";
 
-import { ApplicationCard } from "@/components/applications/application-card";
+import { KanbanBoard } from "@/components/applications/kanban-board";
 import { WorkspaceWarnings } from "@/components/workspace-warnings";
-import { COLUMNS } from "@/lib/data/applications";
 import { localToday } from "@/lib/data/deadline";
 import { loadWorkspace } from "@/lib/data/load";
 
@@ -19,7 +18,7 @@ export default async function ApplicationsPage() {
       <div className="mb-4">
         <h1 className="text-2xl font-semibold">Aplikacje</h1>
         <p className="text-muted-foreground text-sm">
-          Z <code>job_search_tracker.csv</code>. Status zmieniasz na razie przez <code>/outcome</code> w Claude Code.
+          Z <code>job_search_tracker.csv</code>. Zmiany zapisują się w trackerze, więc <code>/outcome</code> i <code>/html-report</code> je widzą.
         </p>
       </div>
       <WorkspaceWarnings warnings={warnings.filter((w) => !w.includes("seen_jobs"))} root={root} />
@@ -29,25 +28,7 @@ export default async function ApplicationsPage() {
           Brak aplikacji w trackerze. Pojawią się po <code>/apply</code> albo <code>/outcome</code>.
         </p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
-          {COLUMNS.map((col) => {
-            const items = sorted.filter((a) => a.column === col.id);
-            return (
-              <section key={col.id} className="bg-muted/40 flex flex-col gap-2 rounded-xl p-2">
-                <header className="px-1 pt-1">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-semibold">{col.label}</h2>
-                    <span className="text-muted-foreground text-xs tabular-nums">{items.length}</span>
-                  </div>
-                  <p className="text-muted-foreground text-xs">{col.hint}</p>
-                </header>
-                {items.map((app, i) => (
-                  <ApplicationCard key={`${app.slug}-${i}`} app={app} today={today} />
-                ))}
-              </section>
-            );
-          })}
-        </div>
+        <KanbanBoard applications={sorted} today={today} />
       )}
     </>
   );

@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Job Search Panel
 
-## Getting Started
+A local web panel over the files the Claude Code workflow writes:
 
-First, run the development server:
+- `job_scraper/seen_jobs.json`: scraped and ranked offers (`/scrape`, `/rank`)
+- `job_search_tracker.csv`: applications (`/apply`, `/outcome`)
+- `documents/applications/<company>_<role>/`: `outcome.md`, `interview_prep_*.md` (`/interview`) and `job_posting.md`
+
+Pages:
+
+- **Oferty** (`/`): ranked offers with filters
+- Offer detail
+- **Aplikacje** (`/applications`): kanban by tracker status
+- Application card: stages, notes, prep packs and the archived posting
+
+The files stay the source of truth. Refresh the page after a `/scrape` or `/rank` run.
+
+## What it writes
+
+The panel writes only `job_search_tracker.csv`, and it follows `/outcome`'s rules:
+
+- You can drag a card to *Wysłane*, *Rozmowy* or *Oferta*, or save the form on an application card. Either way, only that row's `status` changes and a dated note is appended to it. Commas, quotes and line breaks are stripped from notes so the CSV columns never shift.
+- A row leaving `drafted` gets today as its submission `date`.
+- The follow-up button appends the `followed up YYYY-MM-DD` marker that `/outcome` counts.
+- Every other field keeps its exact text, and the file is replaced atomically.
+- The write is refused if the row changed after the page loaded (for example because `/outcome` ran in the meantime).
+
+`outcome.md` and the rest of the archive stay with `/outcome` and `/interview`.
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd panel
+pnpm install
+pnpm dev          # http://localhost:3000, reads the repo root (..)
+pnpm dev:demo     # same UI on fictional data (edits go to a throwaway .demo-tracker.csv)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To read another workspace, run `JOB_SEARCH_ROOT=/path/to/ai-job-search pnpm dev`. You can also point at individual files or the archive folder with `JOB_SEARCH_SEEN_JOBS`, `JOB_SEARCH_TRACKER` and `JOB_SEARCH_APPLICATIONS`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Both `dev` and `start` bind to 127.0.0.1 only. The panel shows personal data, so do not deploy it anywhere public.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Checks
 
-## Learn More
+```bash
+pnpm test         # parsers and tracker writer (Vitest)
+pnpm typecheck
+pnpm lint
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Stack: Next.js 16 (App Router, Server Actions), React 19, Tailwind 4 and shadcn/ui components. `components.json` is already set up, so `pnpm dlx shadcn add <component>` works.

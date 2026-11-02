@@ -66,7 +66,7 @@ export function GateBadge({ label, verdict }: { label: string; verdict: GateVerd
   );
 }
 
-const STATUS_LABELS: Record<string, string> = {
+export const STATUS_LABELS: Record<string, string> = {
   drafted: "szkic",
   applied: "wysłano",
   interview: "rozmowy",

@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# demo copy of the tracker that pnpm dev:demo edits
+.demo-tracker.csv

@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { archiveFolderName, columnFor, followUpsSent, lastActivity, type Column } from "./applications";
 import { compareOffers, parseSeenJobs, type Offer } from "./offers";
+import { rowRefs, type RowRef } from "./tracker-write";
 import { indexTracker, parseTracker, trackerKey, type TrackerRow } from "./tracker";
 
 /**
@@ -14,6 +15,12 @@ import { indexTracker, parseTracker, trackerKey, type TrackerRow } from "./track
 export function dataRoot(): string {
   const configured = process.env.JOB_SEARCH_ROOT;
   return configured ? path.resolve(configured) : path.resolve(process.cwd(), "..");
+}
+
+export function trackerPath(root: string = dataRoot()): string {
+  return process.env.JOB_SEARCH_TRACKER
+    ? path.resolve(process.env.JOB_SEARCH_TRACKER)
+    : path.join(root, "job_search_tracker.csv");
 }
 
 export interface OfferWithTracker extends Offer {
@@ -28,6 +35,8 @@ export interface Application extends TrackerRow {
   followUps: number;
   /** seen_jobs.json key of the matching offer, if /scrape saw it. */
   offerKey: string | null;
+  /** Row position + content hash, so an edit can detect a concurrent /outcome write. */
+  rowRef: RowRef;
 }
 
 export interface Workspace {
@@ -68,11 +77,12 @@ export async function loadWorkspace(): Promise<Workspace> {
   }
 
   let tracker: TrackerRow[] = [];
-  const trackerPath = process.env.JOB_SEARCH_TRACKER
-    ? path.resolve(process.env.JOB_SEARCH_TRACKER)
-    : path.join(root, "job_search_tracker.csv");
-  const trackerText = await readOptional(trackerPath);
-  if (trackerText !== null) tracker = parseTracker(trackerText);
+  const trackerText = await readOptional(trackerPath(root));
+  let refs: RowRef[] = [];
+  if (trackerText !== null) {
+    tracker = parseTracker(trackerText);
+    refs = rowRefs(trackerText);
+  }
 
   const byPair = indexTracker(tracker);
   const withTracker = offers
@@ -80,13 +90,14 @@ export async function loadWorkspace(): Promise<Workspace> {
     .sort(compareOffers);
 
   const offerByPair = new Map(offers.map((o) => [trackerKey(o.company, o.title), o.key]));
-  const applications: Application[] = tracker.map((row) => ({
+  const applications: Application[] = tracker.map((row, i) => ({
     ...row,
     slug: archiveFolderName(row.company, row.role),
     column: columnFor(row.status),
     lastActivity: lastActivity(row),
     followUps: followUpsSent(row),
     offerKey: offerByPair.get(trackerKey(row.company, row.role)) ?? null,
+    rowRef: refs[i],
   }));
 
   return { root, offers: withTracker, tracker, applications, warnings };

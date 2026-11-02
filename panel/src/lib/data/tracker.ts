@@ -40,47 +40,72 @@ export interface TrackerRow {
   deadline: string | null;
 }
 
-/** Minimal RFC 4180 reader. Tracker writers never quote, but a hand edit might. */
-export function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let quoted = false;
-  const input = text.replace(/^﻿/, "");
+export interface CsvField {
+  /** Exactly as written in the file, quotes included. */
+  raw: string;
+  value: string;
+}
 
-  for (let i = 0; i < input.length; i++) {
-    const ch = input[i];
-    if (quoted) {
-      if (ch === '"') {
-        if (input[i + 1] === '"') {
-          field += '"';
-          i++;
+export interface CsvRecord {
+  /** Offsets into the original text; `end` excludes the line terminator. */
+  start: number;
+  end: number;
+  fields: CsvField[];
+}
+
+/**
+ * Minimal RFC 4180 reader that keeps each record's position and each field's
+ * raw text, so a writer can replace one field and leave every other byte of
+ * the file alone. Tracker writers never quote, but a hand edit might.
+ */
+export function scanRecords(text: string): CsvRecord[] {
+  const records: CsvRecord[] = [];
+  let i = text.startsWith("\uFEFF") ? 1 : 0;
+
+  while (i < text.length) {
+    const start = i;
+    const fields: CsvField[] = [];
+    let fieldStart = i;
+    let value = "";
+    let inQuotes = false;
+
+    for (; i < text.length; i++) {
+      const ch = text[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') {
+            value += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
         } else {
-          quoted = false;
+          value += ch;
         }
+      } else if (ch === '"' && i === fieldStart) {
+        inQuotes = true;
+      } else if (ch === ",") {
+        fields.push({ raw: text.slice(fieldStart, i), value });
+        fieldStart = i + 1;
+        value = "";
+      } else if (ch === "\n" || ch === "\r") {
+        break;
       } else {
-        field += ch;
+        value += ch;
       }
-    } else if (ch === '"' && field === "") {
-      quoted = true;
-    } else if (ch === ",") {
-      row.push(field);
-      field = "";
-    } else if (ch === "\n" || ch === "\r") {
-      if (ch === "\r" && input[i + 1] === "\n") i++;
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-    } else {
-      field += ch;
     }
+    const end = i;
+    fields.push({ raw: text.slice(fieldStart, end), value });
+    if (text[i] === "\r" && text[i + 1] === "\n") i += 2;
+    else if (i < text.length) i += 1;
+
+    if (fields.some((f) => f.value.trim() !== "")) records.push({ start, end, fields });
   }
-  if (field !== "" || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-  return rows.filter((r) => r.some((cell) => cell.trim() !== ""));
+  return records;
+}
+
+export function parseCsv(text: string): string[][] {
+  return scanRecords(text).map((r) => r.fields.map((f) => f.value));
 }
 
 /** Canonical spelling; legacy "no response" / "offer declined" are read as the same status. */
