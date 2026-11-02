@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { IntervioCard } from "@/components/intervio-card";
 import { ApplicationActions } from "@/components/applications/application-actions";
 import { DeadlineLabel, TrackerBadge } from "@/components/offers/badges";
 import { Markdown } from "@/components/markdown";
@@ -23,13 +24,14 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default async function ApplicationPage({ params }: PageProps<"/applications/[slug]">) {
   await connection();
   const slug = decodeURIComponent((await params).slug);
-  const { root, applications } = await loadWorkspace();
+  const { root, applications, offers } = await loadWorkspace();
   const app = applications.find((a) => a.slug === slug);
   if (!app) notFound();
 
   const archive = await loadArchive(root, app);
   const today = localToday();
   const outcome = archive?.outcome ?? null;
+  const offer = app.offerKey ? offers.find((o) => o.key === app.offerKey) : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -161,6 +163,11 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
           </CardContent>
         </Card>
       </div>
+
+      <IntervioCard
+        title={app.role}
+        texts={[...(offer?.strengths ?? []), ...(offer?.gaps ?? []), archive?.postingMarkdown]}
+      />
 
       {archive?.postingMarkdown && (
         <details className="bg-card rounded-xl border">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { IntervioCard } from "@/components/intervio-card";
 import { BandBadge, DeadlineLabel, GateBadge, ScoreBadge, TrackerBadge } from "@/components/offers/badges";
 import { CopyApplyButton } from "@/components/offers/copy-apply-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,6 +101,8 @@ export default async function OfferPage({ params }: PageProps<"/offers/[key]">) 
           </CardContent>
         </Card>
       </div>
+
+      <IntervioCard title={offer.title} texts={[...offer.strengths, ...offer.gaps]} />
 
       <Card>
         <CardContent>

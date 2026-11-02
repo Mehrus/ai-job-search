@@ -27,6 +27,10 @@ The panel writes only `job_search_tracker.csv`, and it follows `/outcome`'s rule
 
 `outcome.md` and the rest of the archive stay with `/outcome` and `/interview`.
 
+## Intervio
+
+Offer and application pages have a **Ćwicz w Intervio** card. It detects topics in the posting and in the `/rank` strengths and gaps (RxJS, state management, signals, forms, testing…), then links to the matching Intervio catalog filters. Run Intervio next to the panel with `pnpm dev -p 3001` in the Intervio repo, or set `INTERVIO_URL`. Stacks Intervio has no questions for yet (for example .NET or Java) are listed on the card.
+
 ## Run
 
 ```bash
