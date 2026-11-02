@@ -27,7 +27,7 @@ const TOPICS: { pattern: RegExp; tag: string | null; search?: string; label: str
   { pattern: /accessib|a11y|wcag/i, tag: "tag-accessibility", label: "Accessibility" },
   { pattern: /architect|system design|micro.?frontend/i, tag: "tag-system-design", label: "Architecture" },
   { pattern: /\bcss\b|scss|sass|tailwind/i, tag: "tag-css", label: "CSS" },
-  { pattern: /\bc#|\.net\b|asp\.net|\bdotnet\b|entity framework|ef core/i, tag: null, label: ".NET / C#" },
+  { pattern: /\bc#|\.net\b|asp\.net|\bdotnet\b|entity framework|ef core/i, tag: "tag-dotnet", label: ".NET / C#" },
   { pattern: /\bjava\b|spring/i, tag: null, label: "Java / Spring" },
   { pattern: /\bsql\b|oracle|postgres|database/i, tag: null, label: "SQL" },
   { pattern: /kubernetes|\bk8s\b|docker|azure|aws|\bci\/cd\b|jenkins/i, tag: null, label: "DevOps / cloud" },
@@ -53,7 +53,10 @@ export function intervioCatalogUrl(
   base: string,
   { title, tags, search }: { title: string; tags: string[]; search?: string },
 ): string {
-  const path = /angular/i.test(title)
+  // A fullstack title spans subcategories (e.g. Angular + .NET), so search the whole IT catalog.
+  const path = /\.net|c#|java|fullstack|full-stack/i.test(title)
+    ? "/catalog/it"
+    : /angular/i.test(title)
     ? "/catalog/it/frontend/angular"
     : /react|next\.?js/i.test(title)
       ? "/catalog/it/frontend/react"
