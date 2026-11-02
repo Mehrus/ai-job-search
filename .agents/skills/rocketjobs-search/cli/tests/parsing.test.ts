@@ -114,7 +114,7 @@ describe("buildSearchUrl", () => {
     expect(u.searchParams.get("keywords")).toBe("react")
     expect(u.searchParams.getAll("experienceLevels")).toEqual(["mid", "senior"])
     expect(u.searchParams.get("city")).toBe("Kraków")
-    expect(u.searchParams.get("sortBy")).toBe("publishedAt")
+    expect(u.searchParams.get("sortBy")).toBe("match")
     expect(u.searchParams.get("from")).toBe(String(2 * PAGE_SIZE))
     expect(u.searchParams.get("itemsCount")).toBe(String(PAGE_SIZE))
   })

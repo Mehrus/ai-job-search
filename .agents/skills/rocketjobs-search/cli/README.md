@@ -20,7 +20,7 @@ bun install   # optional — only installs TypeScript dev types
 
 | Command | Description |
 |---------|-------------|
-| `search` | Search job offers (newest first) |
+| `search` | Search job offers (by relevance with `--query`, else newest first) |
 | `detail` | Fetch full detail for one offer by slug or URL |
 
 `search` accepts `--format json|table|plain` (default `json`); `detail` accepts `--format json|plain`.

@@ -47,7 +47,7 @@ SEARCH FLAGS
   --location, -l <city>    City, e.g. "Warszawa", "Kraków", "Wrocław", or "Remote".
   --seniority, -s <list>   Comma list of ${SENIORITY_LEVELS.join(", ")}. Default: all.
   --jobage <days>          Published within N days (filtered client-side).
-  --page <n>               1-indexed page (${PAGE_SIZE} results/page, newest first). Default 1.
+  --page <n>               1-indexed page (${PAGE_SIZE} results/page; by relevance with --query, else newest first). Default 1.
   --limit, -n <n>          Cap results emitted (client-side).
   --format <fmt>           json (default) | table | plain.
 

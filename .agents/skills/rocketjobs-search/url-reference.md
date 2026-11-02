@@ -22,7 +22,7 @@ GET https://rocketjobs.pl/api/candidate-api/offers
 | `city` | City name (case-insensitive, Polish diacritics) | `Warszawa`, `Kraków` |
 | `cityRadius` | km around the city; the site sends `30`, optional | `30` |
 | `remoteWorkOptions` | Workplace filter; the site sends `remote` for fully remote | `remote` |
-| `sortBy` | `publishedAt` (newest) or `match` (relevance). `published` is rejected with 400 | `publishedAt` |
+| `sortBy` | `publishedAt` (newest) or `match` (relevance). `published` is rejected with 400. The CLI sends `match` when there are keywords (the `any` keyword mode also matches description text, so newest-first buries real matches), else `publishedAt` | `match` |
 | `orderBy` | `descending` / `ascending` | `descending` |
 | `from` | Offset (cursor) | `0`, `20`, … |
 | `itemsCount` | Page size (the site uses 10) | `20` |

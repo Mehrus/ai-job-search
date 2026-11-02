@@ -50,8 +50,8 @@ Key flags:
 - `--query <text>` / `-q <text>` — keywords (role, title, skill), e.g. `marketing`, `rekruter`, `księgowa`, `frontend`.
 - `--location <city>` / `-l <city>` — city, e.g. `Warszawa`, `Kraków`, `Wrocław`, `Gdańsk`. `Remote` (or `zdalnie`) switches to the fully-remote filter instead.
 - `--seniority <list>` / `-s <list>` — comma list of `junior`, `mid`, `senior`, `manager`, `c_level`. Default: all levels.
-- `--jobage <days>` — published within N days (filtered client-side on `publishedAt`; results are already newest-first).
-- `--page <n>` — page number (1-indexed, 20 results per page, newest first).
+- `--jobage <days>` — published within N days (filtered client-side on `publishedAt`).
+- `--page <n>` — page number (1-indexed, 20 results per page; sorted by relevance when `--query` is given, otherwise newest first).
 - `--limit <n>` / `-n <n>` — cap total results emitted (client-side).
 - `--format json|table|plain` — default `json`.
 
@@ -68,7 +68,7 @@ all salary ranges, required and nice-to-have skills, languages, apply link, expi
 ## Usage examples
 
 ```bash
-# Mid/senior marketing roles in Warszawa, newest first
+# Mid/senior marketing roles in Warszawa
 bun run .agents/skills/rocketjobs-search/cli/src/cli.ts search -q marketing -l Warszawa --seniority mid,senior --limit 10 --format table
 
 # HR / recruitment roles posted in the last 7 days

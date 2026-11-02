@@ -340,7 +340,9 @@ export function buildSearchUrl(p: SearchParams): string {
   }
   if (p.query) params.set("keywords", p.query)
   params.set("keywordType", "any")
-  params.set("sortBy", "publishedAt")
+  // With keywords, "any" mode also matches mentions deep in the description,
+  // so newest-first buries the real matches; relevance puts them on top.
+  params.set("sortBy", p.query ? "match" : "publishedAt")
   params.set("orderBy", "descending")
   params.set("from", String((p.page - 1) * PAGE_SIZE))
   params.set("itemsCount", String(PAGE_SIZE))
